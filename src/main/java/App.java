@@ -58,7 +58,8 @@ public class App extends TelegramLongPollingBot {
     //добавляем к-во лич в базу
     private int add_lich(Integer user_id, Integer lich) {
     	
-        MongoClientURI connectionString = new MongoClientURI("mongodb://localhost:27017");
+        //MongoClientURI connectionString = new MongoClientURI("mongodb://localhost:27017");
+        MongoClientURI connectionString = new MongoClientURI("mongodb+srv://DypukUa:m15842308!@cluster0-3tubd.gcp.mongodb.net/test?retryWrites=true");
         @SuppressWarnings("resource")
 		MongoClient mongoClient = new MongoClient(connectionString);
         MongoDatabase database = mongoClient.getDatabase("db_voda");
@@ -87,8 +88,9 @@ public class App extends TelegramLongPollingBot {
 //    }
     
     private String save_value_lich (Integer user_id, String lich_num, String lich_value2, String value_date, String lich_name, boolean n_or_p ) {
-    	System.out.println(user_id+" - "+lich_num+" - "+lich_value2+" - "+value_date+" - "+lich_name+" - "+n_or_p);
-        MongoClientURI connectionString = new MongoClientURI("mongodb://localhost:27017");   
+    	System.out.println("save/reneme : "+user_id+" - "+lich_num+" - "+lich_value2+" - "+value_date+" - "+lich_name+" - "+n_or_p);
+        //MongoClientURI connectionString = new MongoClientURI("mongodb://localhost:27017");
+    	MongoClientURI connectionString = new MongoClientURI("mongodb+srv://DypukUa:m15842308!@cluster0-3tubd.gcp.mongodb.net/test?retryWrites=true");
         @SuppressWarnings("resource")
 		MongoClient mongoClient = new MongoClient(connectionString);
         MongoDatabase database = mongoClient.getDatabase("db_voda");
@@ -112,7 +114,14 @@ public class App extends TelegramLongPollingBot {
         		DBObject currDocument = cursor.next();
     	    		try {
     	    			BasicDBObject newDocument = new BasicDBObject("lich"+lich_num, currDocument.get("lich"+lich_num));
-    	    			if ((DBObject)newDocument.get("lich"+lich_num) == null ) {}
+    	    			if ((DBObject)newDocument.get("lich"+lich_num) == null ) {
+    	    				System.out.println("лічильник не переименован и нету в базе 000");	
+            	    		//lich_name = "Лічильник"+lich_num;
+            	    		//lich_name = ((DBObject)newDocument.get("lich"+lich_num)).get("lich_name").toString();
+            	    		
+    	    				Document doc = new Document("lich_name",lich_name).append("lich_value", new Document("value", value_old).append("date", value_date));
+    	    				collection.updateOne(new Document("id", user_id), Updates.set("lich"+lich_num, doc));
+    	    			}
     	    			else {
     	    				Document doc = new Document("lich_name",lich_name).append("lich_value", new Document("value", value_old).append("date", value_date));
     	    				collection.updateOne(new Document("id", user_id), Updates.set("lich"+lich_num, doc));
@@ -155,7 +164,8 @@ public class App extends TelegramLongPollingBot {
 	//добавляем номер счета в БД
     private int add_pax(Integer user_id, Integer answer_pax, Long chat_id) {
     	
-        MongoClientURI connectionString = new MongoClientURI("mongodb://localhost:27017");   
+        //MongoClientURI connectionString = new MongoClientURI("mongodb://localhost:27017");
+    	MongoClientURI connectionString = new MongoClientURI("mongodb+srv://DypukUa:m15842308!@cluster0-3tubd.gcp.mongodb.net/test?retryWrites=true");
         @SuppressWarnings("resource")
 		MongoClient mongoClient = new MongoClient(connectionString);
         MongoDatabase database = mongoClient.getDatabase("db_voda");
@@ -168,7 +178,8 @@ public class App extends TelegramLongPollingBot {
     
     // видалення рахунку	
 	private void del(Integer user_id) {
-	    MongoClientURI connectionString = new MongoClientURI("mongodb://localhost:27017");
+	    //MongoClientURI connectionString = new MongoClientURI("mongodb://localhost:27017");
+	    MongoClientURI connectionString = new MongoClientURI("mongodb+srv://DypukUa:m15842308!@cluster0-3tubd.gcp.mongodb.net/test?retryWrites=true");
 	    @SuppressWarnings("resource")
 	    MongoClient mongoClient = new MongoClient(connectionString);
 	    MongoDatabase database = mongoClient.getDatabase("db_voda");
@@ -179,7 +190,8 @@ public class App extends TelegramLongPollingBot {
 	  }
 	  
     private static  Document info(Integer user_id) {
-      MongoClientURI connectionString = new MongoClientURI("mongodb://localhost:27017");
+      //MongoClientURI connectionString = new MongoClientURI("mongodb://localhost:27017");
+      MongoClientURI connectionString = new MongoClientURI("mongodb+srv://DypukUa:m15842308!@cluster0-3tubd.gcp.mongodb.net/test?retryWrites=true");
       MongoClient mongoClient = new MongoClient(connectionString);
       MongoDatabase database = mongoClient.getDatabase("db_voda");
       MongoCollection<Document> collection = database.getCollection("users");
@@ -200,7 +212,9 @@ public class App extends TelegramLongPollingBot {
     	String last_name = update.getMessage().getFrom().getLastName();
     	String username = update.getMessage().getFrom().getUserName();
 
-        MongoClientURI connectionString = new MongoClientURI("mongodb://localhost:27017");//?ssl=true
+        //MongoClientURI connectionString = new MongoClientURI("mongodb://localhost:27017");//?ssl=true
+        MongoClientURI connectionString = new MongoClientURI("mongodb+srv://DypukUa:m15842308!@cluster0-3tubd.gcp.mongodb.net/test?retryWrites=true");
+        //"mongodb+srv://kay:myRealPassword@cluster0.mongodb.net/");
 //      SSLContext sslContext = ...
 //		MongoClientOptions options = MongoClientOptions.builder()
 //														.compressorList(Arrays.asList(MongoCompressor.createSnappyCompressor(), 
@@ -707,7 +721,7 @@ public class App extends TelegramLongPollingBot {
         	//2.13
         	//text='Замінити назву лічильника №
         	else if (update.getCallbackQuery().getData().contains("cold") | update.getCallbackQuery().getData().contains("hot")){
-        			System.out.println("2.13 ваші ліч = перейменувати : "+update.getCallbackQuery());	
+        			System.out.println("2.13 ваші ліч = перейменувати : "+data_text+" - "+message_text+" - "+update.getCallbackQuery());	
         	        String s = update.getCallbackQuery().getMessage().getText();        
         	        String lich_num = s.replaceAll("[^0-9]+", "");
         	        //System.out.println(s1);	
@@ -822,7 +836,8 @@ public class App extends TelegramLongPollingBot {
                 	InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
                 	List<List<InlineKeyboardButton>> rowList = new ArrayList<List<InlineKeyboardButton>>();
                 	
-                    MongoClientURI connectionString = new MongoClientURI("mongodb://localhost:27017");
+                    //MongoClientURI connectionString = new MongoClientURI("mongodb://localhost:27017");
+                	MongoClientURI connectionString = new MongoClientURI("mongodb+srv://DypukUa:m15842308!@cluster0-3tubd.gcp.mongodb.net/test?retryWrites=true");
                     MongoClient mongoClient = new MongoClient(connectionString);
                 	@SuppressWarnings("deprecation")
             		DB db = mongoClient.getDB("db_voda");
@@ -1046,7 +1061,8 @@ public class App extends TelegramLongPollingBot {
     	InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
     	List<List<InlineKeyboardButton>> rowList = new ArrayList<List<InlineKeyboardButton>>();
     	
-        MongoClientURI connectionString = new MongoClientURI("mongodb://localhost:27017");
+        //MongoClientURI connectionString = new MongoClientURI("mongodb://localhost:27017");
+    	MongoClientURI connectionString = new MongoClientURI("mongodb+srv://DypukUa:m15842308!@cluster0-3tubd.gcp.mongodb.net/test?retryWrites=true");
         MongoClient mongoClient = new MongoClient(connectionString);
     	@SuppressWarnings("deprecation")
 		DB db = mongoClient.getDB("db_voda");
