@@ -1,1 +1,1 @@
-worker: sh target/bin/workerBot
+web: python App.py
